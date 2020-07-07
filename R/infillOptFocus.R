@@ -2,18 +2,28 @@
 # around the currently best point. only numeric / ints are currently "shrunken"
 # works for ALL parameter sets
 #
+# input: models               : EITHER a single model or a list of models, depending on the method
+#      : cs - a constraint set, class = ParamSet, to constrain values of parameter set in focus search
+#
 #FIXME it would be nice to have a REASONABLE way to shrink categorical stuff too.
 #FIXME should we shrink if a local value is NA (dependent param)
 #
 # See infillOptCMAES.R for interface explanation.
-infillOptFocus = function(infill.crit, models, control, par.set, opt.path, designs, iter, ...) {
+#
+
+infillOptFocus = function(infill.crit, models, control, par.set, opt.path, designs, iter, cs = NULL, ...) {
   global.y = Inf
 
   # restart the whole crap some times
   for (restart.iter in seq_len(control$infill.opt.restarts)) {
     # copy parset so we can shrink it
-    ps.local = par.set
-
+    
+    if (!is.null(cs)) {
+        ps.local = cs
+    } else {
+        ps.local = par.set
+    }
+    
     # do iterations where we focus the region-of-interest around the current best point
     for (local.iter in seq_len(control$infill.opt.focussearch.maxit)) {
       # predict on design where NAs were imputed, but return proposed points with NAs
@@ -23,7 +33,6 @@ infillOptFocus = function(infill.crit, models, control, par.set, opt.path, desig
       newdesign = convertDataFrameCols(newdesign, ints.as.num = TRUE, logicals.as.factor = TRUE)
 
       y = infill.crit(newdesign, models, control, ps.local, designs, iter, ...)
-
 
       # get current best value
       local.index = getMinIndex(y, ties.method = "random")
@@ -39,6 +48,7 @@ infillOptFocus = function(infill.crit, models, control, par.set, opt.path, desig
 
       # now shrink ps.local object so we search more locally
        ps.local$pars = lapply(ps.local$pars, function(par) {
+         # print("Shrink parameters")
          # only shrink when there is a value
          val = local.x.list[[par$id]]
          if (!isScalarNA(val)) {
