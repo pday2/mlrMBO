@@ -1,231 +1,14 @@
-# Update location of mlrMBO and setwd for data
 library(testthat)
 context("infillOptFocus")
 
 test_that("infillOptFocus properly constrains parameters", {
     library(mlr)
     library(mlr3)
-    library("devtools")
-    # load local mlrMBO copy
-    if (Sys.info()[1] == "Linux"){
-      load_all("/home/muddy/Tresors/Documentsacer/_UWyo/mlrMBO/mlrMBO/R")
-    } else {
-      load_all("C:/Users/peter/My Tresors/Documentsacer/_UWyo/mlrMBO/mlrMBO/R")
-    }
-
+    
     data = read.csv(text = "power,time,gas,pressure,ratio
     1004,10624,Argon,660,2.65884223
-    1008,10500,Argon,720,3.424371829
-    1013,10475,Argon,720,3.182223683
-    1095,19029,Argon,940,2.776420163
     1105,12381,Air,860,0.12
-    1108,9828,Nitrogen,820,0.953560013
-    1206,19145,Argon,920,3.245754845
-    1211,19279,Argon,470,3.228924409
-    123,14994,Nitrogen,220,1.234061595
-    1249,19711,Argon,460,3.249050132
-    1280,17180,Argon,980,2.177099828
-    1285,1922,Argon,990,3.132160852
-    1286,15717,Argon,530,2.891256344
-    1286,18227,Air,920,0.12
-    1286,18626,Argon,930,1.67188718
-    1287,9365,Argon,920,2.486961786
-    1288,19449,Argon,920,2.964636773
-    1288,19515,Argon,920,2.446689168
-    1293,9319,Argon,940,3.307882968
-    1300,9324,Argon,1000,3.370876358
-    1304,9321,Argon,1000,3.582150476
-    1307,9322,Argon,1000,5.159847662
-    1315,9331,Argon,980,3.92767588
-    1316,10972,Nitrogen,200,1.2159602
-    1329,9605,Argon,990,3.766115716
-    1333,6623,Argon,970,3.45655082
-    1341,10625,Argon,700,3.264845323
-    1343,9585,Argon,980,4.276949681
-    1355,9322,Argon,1000,3.062587782
-    1403,16863,Argon,990,2.68061448
-    1408,2841,Argon,880,3.193382374
-    1450,15621,Argon,510,3.05041702
-    1457,2629,Argon,890,3.080188754
-    1468,7549,Nitrogen,20,2.722335204
-    1474,6454,Nitrogen,20,1.861073482
-    1491,19728,Argon,400,2.731740027
-    1511,16433,Air,500,0.12
-    1518,17231,Argon,890,3.308118401
-    1521,17553,Argon,820,3.490871423
-    1527,18520,Argon,310,1.791615889
-    1537,6043,Air,70,0.921751931
-    1542,18514,Argon,310,3.274632664
-    1546,18375,Argon,320,1.818586293
-    1560,9314,Argon,1000,3.230997225
-    1574,11017,Argon,1000,2.932014539
-    1575,6634,Nitrogen,20,2.596027828
-    1596,18198,Argon,310,2.909999609
-    1610,1822,Argon,730,3.243461912
-    1665,18552,Argon,310,2.289480755
-    1703,10481,Argon,960,3.007009955
-    1717,10382,Argon,970,3.16631637
-    1720,1831,Argon,80,1.682780666
-    1735,10293,Nitrogen,970,1.175244034
-    1736,10319,Nitrogen,970,1.051970301
-    1738,10331,Argon,810,3.301696296
-    1739,10379,Argon,990,4.724743249
-    1740,10379,Argon,970,3.700694716
-    1757,10378,Argon,970,5.499063387
-    1760,11229,Argon,970,3.207143574
-    1769,3920,Air,1000,0.12
-    1776,10375,Argon,970,4.08690544
-    1780,5333,Argon,960,2.857800965
-    1789,1792,Argon,500,3.177328601
-    1805,17740,Argon,970,2.912210568
-    1806,8198,Nitrogen,810,1.040370964
-    1809,10259,Argon,980,4.16942864
-    1842,18881,Argon,830,2.975606279
-    1843,16852,Air,810,0.12
-    1844,16618,Air,760,0.12
-    1875,16877,Argon,990,3.051428698
-    1875,18881,Argon,820,4.0168837
-    1878,7879,Argon,840,3.118894583
-    1883,16859,Air,990,0.12
-    1888,16925,Argon,990,3.638606351
-    1890,16900,Argon,990,3.983891201
-    1891,10378,Argon,970,4.067806774
-    1894,17003,Argon,990,3.017604271
-    1908,18880,Nitrogen,860,1.036697397
-    1915,10379,Argon,990,3.893852932
-    1930,2421,Argon,800,3.080778976
-    1948,18880,Nitrogen,860,1.255781892
-    1956,18873,Argon,720,2.901374775
-    1962,1814,Nitrogen,520,2.121105968
-    1975,4268,Argon,990,3.827582704
-    1976,1827,Argon,70,2.093948947
-    1984,18880,Argon,850,3.855773748
-    2008,18880,Argon,850,4.276358767
-    2009,4227,Argon,1000,3.680987162
-    2021,18886,Argon,840,3.81399825
-    2023,3171,Argon,800,3.439505258
-    2035,1491,Argon,490,3.72323823
-    2065,18880,Argon,900,3.571770687
-    2068,15492,Nitrogen,310,1.236027609
-    2069,18445,Argon,830,2.985552758
-    2073,1840,Argon,490,2.595710184
-    210,11475,Air,970,0.12
-    2128,18880,Argon,820,3.870920293
-    2131,18800,Argon,820,4.051220319
-    2141,1099,Argon,80,3.073853026
-    2143,18880,Argon,810,3.960298908
-    2145,18880,Argon,810,4.349114421
-    2148,18880,Argon,290,1.914237706
-    2150,18880,Argon,810,4.16268586
-    2153,3502,Argon,800,2.96307017
-    2155,18832,Air,790,0.12
-    2166,1815,Argon,140,3.191922596
-    2168,1825,Argon,490,4.024224557
-    2170,1822,Argon,490,5.203238087
-    2170,1830,Argon,470,3.827207228
-    2172,1835,Argon,380,3.433754797
-    2222,1747,Argon,490,3.453268783
-    2243,18925,Argon,770,3.081672687
-    2251,18903,Argon,770,3.12589218
-    2274,1983,Argon,490,3.215536504
-    2309,16179,Argon,990,2.858442071
-    2358,1821,Argon,240,2.977786277
-    2394,1822,Argon,160,1.62537662
-    242,4974,Nitrogen,440,0.85456231
-    2430,18879,Argon,770,2.461660064
-    2450,19833,Argon,770,2.386308297
-    2451,10379,Argon,970,4.599581634
-    2456,1822,Argon,180,2.012994937
-    2535,1822,Argon,80,3.726127597
-    2637,16266,Argon,500,2.373853521
-    2673,1818,Argon,690,3.812412746
-    2678,4279,Argon,920,3.613608221
-    2687,2822,Argon,930,2.982047036
-    2696,1824,Argon,680,3.59011885
-    2697,8206,Air,540,0.12
-    2765,514,Argon,490,3.01456403
-    2824,10377,Argon,960,2.902882653
-    2838,18878,Argon,880,2.127514126
-    2905,10380,Argon,970,3.444947127
-    2962,12485,Nitrogen,1000,1.486708819
-    2982,17867,Nitrogen,530,1.530874491
-    3018,10379,Air,960,0.12
-    3063,4467,Argon,570,2.613552957
-    3066,10379,Air,960,0.12
-    3099,18787,Argon,910,2.271008185
-    3155,10378,Air,950,0.12
-    3156,10357,Argon,950,2.691402923
-    3164,14268,Nitrogen,30,2.065513817
-    320,2241,Argon,850,1.414816905
-    3214,1823,Argon,720,3.310161931
-    3263,2601,Argon,1000,3.067360272
-    3266,2523,Argon,980,2.626501432
-    3302,2414,Air,860,0.12
-    3303,3421,Argon,860,2.317012514
-    3314,2120,Argon,840,2.779790313
-    3445,1184,Argon,690,3.384759098
-    3516,813,Argon,40,2.128768105
-    3519,1129,Argon,40,2.989507712
-    3527,1824,Argon,40,1.538457125
-    3584,1131,Air,20,0.57836145
-    3613,10766,Argon,600,2.093101526
-    3617,16380,Nitrogen,740,1.321003072
-    3706,10137,Nitrogen,370,1.522617069
-    3728,9350,Argon,870,2.089539008
-    3777,9767,Argon,900,2.132647453
-    3797,18821,Air,800,0.12
-    3805,19668,Argon,920,1.959362197
-    3810,10110,Argon,910,3.537409645
-    3812,10118,Argon,970,2.264059348
-    3830,10217,Argon,910,2.996145204
-    3907,9823,Air,30,0.12
-    396,9065,Argon,460,1.365235057
-    3993,3615,Argon,860,2.662923334
-    4022,2321,Argon,900,3.341319333
-    4033,3055,Argon,880,3.371732725
-    4046,2524,Argon,880,3.334058141
-    4060,9988,Argon,270,1.32755134
-    4068,10089,Argon,910,2.894545384
-    4079,3055,Argon,850,2.338842087
-    4139,1957,Argon,900,3.134584619
-    429,4810,Nitrogen,630,0.869027237
-    4297,9256,Nitrogen,110,1.685642824
-    4326,3961,Argon,250,1.416376543
-    4431,3854,Argon,270,2.190961
-    4506,8046,Nitrogen,110,1.458586461
-    4564,18002,Air,50,0.12
-    4585,14485,Nitrogen,100,1.174840469
-    4717,1457,Argon,640,2.323310757
-    4834,5615,Air,170,0.12
-    4886,11627,Nitrogen,680,1.340241441
-    489,15493,Argon,460,1.236779697
-    4909,1710,Argon,960,2.765735333
-    4962,15074,Argon,360,1.323049628
-    4963,2336,Argon,960,3.364084792
-    5028,2371,Argon,960,2.58479023
-    5041,9305,Argon,1000,2.249307903
-    5069,2735,Nitrogen,480,1.419028259
-    5153,19318,Air,780,0.12
-    5239,14517,Nitrogen,230,1.19774686
-    5309,2566,Argon,960,2.705688601
-    5321,16727,Air,510,0.12
-    5332,6770,Air,630,0.12
-    5394,10380,Argon,970,2.287450434
-    5480,12267,Nitrogen,180,1.149918539
-    616,7988,Air,60,0.12
-    628,10332,Air,200,0.12
-    698,18907,Argon,820,1.978090509
-    731,10628,Argon,710,1.748881858
-    745,2168,Argon,790,2.152875412
-    783,10474,Argon,690,1.989581105
-    826,1826,Argon,480,3.148752413
-    830,10446,Argon,730,2.743036246
-    83,8031,Air,610,0.12
-    933,7024,Nitrogen,940,0.917709244
-    952,18662,Argon,290,1.815097367
-    981,18639,Argon,290,1.256006035")
-
-
+    1108,9828,Nitrogen,820,0.953560013")
 
     ps = makeParamSet(
     makeIntegerParam("power", lower = 10, upper = 5555),
@@ -239,133 +22,35 @@ test_that("infillOptFocus properly constrains parameters", {
     ctrl = setMBOControlTermination(ctrl, iters = 50)
 
     opt.state = initSMBO(par.set = ps, design = data, control = ctrl, minimize = FALSE, noisy = TRUE)
-    
-    # Normal operation, correct parameter names, valid limits
-    c1 = makeParamSet(
-              makeIntegerParam("power", lower = 10, upper = 5555),
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Air", "Argon")),
-              makeIntegerParam("pressure", lower = 50, upper = 50))
-    
-    # Normal operation, modify limits of ps, set time to 12121
-    c01 = modifyParam(ps, id="time", lower=12121, upper=12121)
-    
-    # power upper limit outside upper limit, set to ps's upper limit
-    c2 = makeParamSet(
-              makeIntegerParam("power", lower = 4444, upper = 888888),
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Air", "Argon")),
-              makeIntegerParam("pressure", lower = 50, upper = 50))
-    
-    # mising power parameter, power will be set to ps limits
-    c3 = makeParamSet(
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Air", "Argon")),
-              makeIntegerParam("pressure", lower = 50, upper = 50))
-    
-    # mising power parameter, power will be set to ps limits
-    # gas has extra/invalid value "Vacuum" list will ignore that value
-    c4 = makeParamSet(
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Air", "Argon", "Vacuum")),
-              makeIntegerParam("pressure", lower = 50, upper = 50))
-    
-    # mising power parameter, power will be set to ps limits
-    # pressure lower limit invalid set to ps limit
-    c5 = makeParamSet(
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Air", "Argon")),
-              makeIntegerParam("pressure", lower = -3, upper = 11))
-    
-    # modify c1 constraint set, set power to 444
-    c6 = modifyParam(ps, c1, id="power", lower = 444, upper = 444)
-    
-    # modify c6 constraint set. No upper limit - set to ps limits
-    c7 = modifyParam(ps, c6, id="power", lower = 2112)
-    
-    # modify c6 constraint set. No lower limit - set to ps limits
-    c8 = modifyParam(ps, c7, id="powrrr", upper = 2552)
-    
-    # extra/inavlid parameter "pressurrr" - ignore
-    # extra/invalid parameter gas2 - ignore
-    # pressure missing, set to ps limits
-    # gas missing, set to ps values
-    # set time to 789
-    c9 = makeParamSet(
-              makeIntegerParam("power", lower = 10, upper = 5555),
-              makeIntegerParam("time", lower = 789, upper = 789),
-              makeDiscreteParam("gas2", values = c("Air", "Argon")),
-              makeIntegerParam("pressurrr", lower = 500, upper = 500))
-    
-    # power missing upper limit, set to ps upper limits
-    # set time to 777
-    # set gas to Nitrogen
-    # set pressure to 555
-    c10 = makeParamSet(
-              makeIntegerParam("power", lower = 5500),
-              makeIntegerParam("time", lower = 777, upper = 777),
-              makeDiscreteParam("gas", values = c("Nitrogen")),
-              makeIntegerParam("pressure", lower = 555, upper = 555))
-    
-    # modify c10 set gas value to Argon
-    c11 = modifyParam(ps, c10, id="gas", lower = list("Argon"))
-    
-    # modify c11 set gas to Air
-    c12 = modifyParam(ps, c11, id="gas", upper = "Air")
-    
-    # modify limits of ps, set time to character, not numeric
-    #                      will default to ps limits
-    c14 = modifyParam(ps, id="time", lower="12121", upper="12121")
-    
+
+    # Normal operation, modify limits of ps, set power to 1500
+    c1 = modifyParam(ps, id="power", lower=1500, upper=1500)
     prop1 = suppressWarnings({proposePoints(opt.state, c1)})
-    expect_equal(prop1$prop.points$pressure, 50)
-    expect_equal(prop1$prop.points$gas, as.factor("Argon"))
-    prop01 = suppressWarnings({proposePoints(opt.state, c01)})
-    expect_equal(prop01$prop.points$time, 12121)
+    expect_equal(prop1$prop.points$power, 1500)
+
+    # Normal operation, modify limits of ps, set time to 2112
+    c2 = modifyParam(ps, id="time", lower=2112, upper=2112)
     prop2 = suppressWarnings({proposePoints(opt.state, c2)})
-    expect_equal(prop2$prop.points$time, 777)
-    expect_gte(prop2$prop.points$power, 4444)
-    expect_lte(prop2$prop.points$power, 5555)
+    expect_equal(prop2$prop.points$time, 2112)
+
+    # Normal operation, modify limits of ps
+    c3 = modifyParam(ps, id="gas", lower="Nitrogen")
     prop3 = suppressWarnings({proposePoints(opt.state, c3)})
-    expect_gte(prop2$prop.points$power, 10)
-    expect_lte(prop2$prop.points$power, 5555)
+    expect_equal(prop3$prop.points$gas, as.factor("Nitrogen"))
+
+    # Normal operation, modify limits of ps, set range of pressure to 50-100
+    c4 = modifyParam(ps, id="pressure", lower=50, upper=100)
     prop4 = suppressWarnings({proposePoints(opt.state, c4)})
-    expect_equal(prop4$prop.points$gas, as.factor("Argon"))
+    expect_gte(prop4$prop.points$pressure, 50)
+    expect_lte(prop4$prop.points$pressure, 100)
+    
+    #Normal operation, modify limits of ps, change two parameters
+    c5 = modifyParam(ps, id="pressure", lower=550, upper=550)
+    c5 = modifyParam(c5, id="power", lower=760, upper=770)
     prop5 = suppressWarnings({proposePoints(opt.state, c5)})
-    expect_gte(prop5$prop.points$pressure, 10)
-    expect_lte(prop5$prop.points$pressure, 11)
-    prop6 = suppressWarnings({proposePoints(opt.state, c6)})
-    expect_equal(prop6$prop.points$power, 444)
-    prop7 = suppressWarnings({proposePoints(opt.state, c7)})
-    expect_gte(prop7$prop.points$power, 10)
-    expect_lte(prop7$prop.points$power, 5555)
-    expect_equal(prop7$prop.points$time, 777)
-    prop8 = suppressWarnings({proposePoints(opt.state, c8)})
-    expect_gte(prop8$prop.points$power, 10)
-    expect_lte(prop8$prop.points$power, 5555)
-    expect_equal(prop8$prop.points$time, 777)
-    prop9 = suppressWarnings({proposePoints(opt.state, c9)})
-    expect_gte(prop9$prop.points$pressure, 10)
-    expect_lte(prop9$prop.points$pressure, 1000)
-    expect_equal(prop9$prop.points$time, 789)
-    prop10 = suppressWarnings({proposePoints(opt.state, c10)})
-    expect_gte(prop10$prop.points$power, 5500)
-    expect_lte(prop10$prop.points$power, 5555)
-    expect_equal(prop10$prop.points$pressure, 555)
-    expect_equal(prop10$prop.points$time, 777)
-    expect_equal(prop10$prop.points$gas, as.factor("Nitrogen"))
-    prop11 = suppressWarnings({proposePoints(opt.state, c11)})
-    expect_equal(prop11$prop.points$gas, as.factor("Argon"))
-    expect_equal(prop11$prop.points$pressure, 555)
-    expect_equal(prop11$prop.points$time, 777)
-    prop12 = suppressWarnings({proposePoints(opt.state, c12)})
-    expect_equal(prop12$prop.points$pressure, 555)
-    expect_equal(prop12$prop.points$gas, as.factor("Air"))
-    expect_equal(prop12$prop.points$time, 777)
-    prop14 = suppressWarnings({proposePoints(opt.state, c14)})
-    expect_gte(prop14$prop.points$time, 500)
-    expect_lte(prop14$prop.points$time, 20210)
-
-
+    expect_equal(prop5$prop.points$pressure, 550)
+    expect_gte(prop5$prop.points$power, 760)
+    expect_lte(prop5$prop.points$power, 770)
+    
 
 })

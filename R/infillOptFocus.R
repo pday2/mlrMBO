@@ -11,19 +11,14 @@
 # See infillOptCMAES.R for interface explanation.
 #
 
-infillOptFocus = function(infill.crit, models, control, par.set, opt.path, designs, iter, cs = NULL, ...) {
+infillOptFocus = function(infill.crit, models, control, par.set, opt.path, designs, iter, ...) {
   global.y = Inf
 
   # restart the whole crap some times
   for (restart.iter in seq_len(control$infill.opt.restarts)) {
     # copy parset so we can shrink it
-    
-    if (!is.null(cs)) {
-        ps.local = cs
-    } else {
-        ps.local = par.set
-    }
-    
+    ps.local = par.set
+
     # do iterations where we focus the region-of-interest around the current best point
     for (local.iter in seq_len(control$infill.opt.focussearch.maxit)) {
       # predict on design where NAs were imputed, but return proposed points with NAs

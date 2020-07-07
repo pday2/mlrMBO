@@ -25,12 +25,6 @@ proposePoints = function(opt.state, cs = NULL) {
   opt.problem = getOptStateOptProblem(opt.state)
   control = getOptProblemControl(opt.problem)
   
-  
-  if (!is.null(cs)) {
-      ps = getOptProblemParSet(opt.problem)
-      cs = checkConstraint(ps, cs)
-  } 
-  
   if (control$n.objectives == 1L) {
     if (is.null(control$multipoint.method)) {
       res = proposePointsByInfillOptimization(opt.state, cs)

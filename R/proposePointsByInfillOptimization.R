@@ -1,7 +1,7 @@
 # directly call an optimizer on an infill crit and output 1 or more proposed points
 #
 # input: models               : EITHER a single model or a list of models, depending on the method
-#      : cs [ParamSet] : a constraint set, to constrain values of parameter set in focus search
+#      : cs [ParamSet]        : a constraint set, to constrain values of parameter set in focus search
 #
 # output:
 #   prop.points [data.frame]  : the proposed points, 1 per row, with n rows
@@ -13,12 +13,18 @@
 #                               length is one string PER PROPOSED POINT, not per element of <models>
 #                               NA if the model was Ok, or the (first) error message if some model crashed
 # 
+#   Note: if constraint set passed to proposePoints, that will be used for par.set
+#         otherwise the standard par.set will be used when cs = NULL
 
 proposePointsByInfillOptimization = function(opt.state, cs = NULL, par.set = NULL, control = NULL, opt.path = NULL, models = NULL, designs = NULL, ...) {
   opt.problem = getOptStateOptProblem(opt.state)
   models = models %??% getOptStateModels(opt.state)$models
   if (inherits(models, "WrappedModel")) models = list(models)
-  par.set = par.set %??% getOptProblemParSet(opt.problem)
+  if (is.null(cs)) {
+      par.set = par.set %??% getOptProblemParSet(opt.problem)
+  } else {
+      par.set = cs
+  }
   designs = designs %??% getOptStateDesigns(opt.state)
   if (inherits(designs, "data.frame")) designs = list(designs)
   control = control %??% getOptProblemControl(opt.problem)
@@ -41,7 +47,7 @@ proposePointsByInfillOptimization = function(opt.state, cs = NULL, par.set = NUL
   secs = measureTime({
     prop.points = infill.opt.fun(infill.crit.fun, models = models,
       control = control, par.set = par.set, opt.path = opt.path,
-      designs = designs, iter = iter, cs = cs,
+      designs = designs, iter = iter,
       progress = progress, ...)
   })
   prop.points.converted = convertDataFrameCols(prop.points, ints.as.num = TRUE,
