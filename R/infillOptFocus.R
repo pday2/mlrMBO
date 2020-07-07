@@ -2,15 +2,10 @@
 # around the currently best point. only numeric / ints are currently "shrunken"
 # works for ALL parameter sets
 #
-# input: models               : EITHER a single model or a list of models, depending on the method
-#      : cs - a constraint set, class = ParamSet, to constrain values of parameter set in focus search
-#
 #FIXME it would be nice to have a REASONABLE way to shrink categorical stuff too.
 #FIXME should we shrink if a local value is NA (dependent param)
 #
 # See infillOptCMAES.R for interface explanation.
-#
-
 infillOptFocus = function(infill.crit, models, control, par.set, opt.path, designs, iter, ...) {
   global.y = Inf
 
@@ -29,6 +24,7 @@ infillOptFocus = function(infill.crit, models, control, par.set, opt.path, desig
 
       y = infill.crit(newdesign, models, control, ps.local, designs, iter, ...)
 
+
       # get current best value
       local.index = getMinIndex(y, ties.method = "random")
       local.y = y[local.index]
@@ -43,7 +39,6 @@ infillOptFocus = function(infill.crit, models, control, par.set, opt.path, desig
 
       # now shrink ps.local object so we search more locally
        ps.local$pars = lapply(ps.local$pars, function(par) {
-         # print("Shrink parameters")
          # only shrink when there is a value
          val = local.x.list[[par$id]]
          if (!isScalarNA(val)) {
