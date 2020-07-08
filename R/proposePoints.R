@@ -25,6 +25,10 @@ proposePoints = function(opt.state, cs = NULL) {
   opt.problem = getOptStateOptProblem(opt.state)
   control = getOptProblemControl(opt.problem)
   
+  if (class(cs) != "ParamSet") {
+      stopf("cs must be of class ParamSet")
+  }
+  
   if (control$n.objectives == 1L) {
     if (is.null(control$multipoint.method)) {
       res = proposePointsByInfillOptimization(opt.state, cs)
